@@ -8,7 +8,8 @@ output:
 
 ## Loading and preprocessing the data
 
-```{r}
+
+```r
 url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
 zip_file <- ".\\repdata_data_activity.zip"
 if(!file.exists("zip_file")){
@@ -25,43 +26,70 @@ data2 <- data1
 ```
 
 ## What is mean total number of steps taken per day?
-```{r}
+
+```r
 ## first, we need to eliminate all the na values
 data1 <- na.omit(data1)
 totalStep <- aggregate(steps~date,data=data1, FUN=sum)
 hist(totalStep$steps,main="total number of steps taken per day",
      xlab="steps",breaks=25)
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 mean steps per day
-```{r}
+
+```r
 print(mean(totalStep$steps))
 ```
+
+```
+## [1] 10766.19
+```
 median steps per day
-```{r}
+
+```r
 print(median(totalStep$steps))
+```
+
+```
+## [1] 10765
 ```
 
 
 ## What is the average daily activity pattern?
-```{r}
+
+```r
 averageSteps<- aggregate(steps~interval,data=data1, FUN=mean)
 plot(x=averageSteps$interval ,y=averageSteps$steps,type="l",
      xlab="intervals",ylab="aberage steps",main=" 5-minute interval and the average number of steps taken, averaged across all days")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 maximum numbers of steps
-```{r}
+
+```r
 print(averageSteps$interval[which.max(averageSteps$steps)])
+```
+
+```
+## [1] 835
 ```
 
 
 ## Imputing missing values
 the total number of missing values is
-```{r}
+
+```r
 sum(is.na(data2$steps))
 ```
 
+```
+## [1] 2304
+```
 
-```{r}
+
+
+```r
 averageSteps<- aggregate(steps~interval,data=data2, FUN=mean,na.rm=TRUE)
 x1 <- na.omit(subset(averageSteps, interval == data2$interval[is.na(data2$steps)]))
 data_fillin <- data2
@@ -71,18 +99,33 @@ hist(stepsNoNA$steps,
      main = "Total steps taken each day (after filling in missing values)",
      xlab = "steps per day",breaks = 25)
 ```
-```{r}
+
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
+```r
 meanSteps <- mean(stepsNoNA$steps)
 meanSteps
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 medianSteps <- median(stepsNoNA$steps)
 medianSteps
+```
+
+```
+## [1] 10766.19
 ```
 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r}
+
+```r
 weekdaysValue <-c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
 dateType <- ifelse(
   weekdays(data_fillin$date) %in% weekdaysValue,
@@ -91,7 +134,8 @@ dateType <- ifelse(
 data_fillin$daytype <- factor(x = dateType)
 ```
 
-```{r}
+
+```r
 averageStep <- aggregate(steps~interval+daytype,data=data_fillin,FUN=mean)
 
 library(ggplot2)
@@ -101,6 +145,7 @@ ggplot(averageStep,aes(interval,steps,col=daytype))+
   xlab('5-minute interval')+
   ylab('averaged steps across weekdays or weekendays')+
   ggtitle('Activity pattern by week of the day')
-  
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
